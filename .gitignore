@@ -1,0 +1,7 @@
+__pycache__/
+.storage
+data/
+.shared/
+.storage/
+flagged/
+lightning_logs/
