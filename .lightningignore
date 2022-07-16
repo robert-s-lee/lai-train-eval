@@ -2,3 +2,4 @@ data/
 .shared/
 .storage/
 flagged/
+lightning_logs/

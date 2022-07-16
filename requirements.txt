@@ -9,5 +9,4 @@ lightning_hpo
 websockets
 setuptools==59.5.0  # fix tensorboard AttributeError: module 'setuptools._distutils' has no attribute 'version'.
 tensorboard
-lai-bashwork
-lightning
+https://github.com/robert-s-lee/lit_bashwork/archive/refs/tags/0.0.1.tar.gz

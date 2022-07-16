@@ -95,3 +95,8 @@ if __name__ == "__main__":
         ImageClassifier, MNISTDataModule, seed_everything_default=42, save_config_overwrite=True, run=False
     )
     cli.trainer.fit(cli.model, datamodule=cli.datamodule)
+    cli.logger.logger.log_dir
+    # Using the TorchScript format, you will be able to load the exported model and run inference without defining the model class.
+    model_scripted = torch.jit.script(cli.model) # Export to TorchScript
+    model_scripted.save('example.pt') # Save
+
