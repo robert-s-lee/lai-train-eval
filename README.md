@@ -1,6 +1,8 @@
 Lift-and-shift existing training and inference scripts as Lightning App.
 Lightning App is the one tool that can automate the research workflow and ML pipeline.
-Complexity integrating many components can be simplified with Lighting App.
+Integrating many components each with it's own scripting tools take time and error pone.
+Lighting App is pure Python. 
+One language for all tasks.
 
 ## Current State  
 Lets assume we have existing scripts for training and inference.
@@ -36,13 +38,18 @@ graph TD;
 graph TD;
   T[Train]     <-- push, get --> LD[Lightning App Drive]
   I[Inference] <-- push, get --> LD
-  D[Diag]]     <-- push, get --> LD
+  D[Diag]      <-- push, get --> LD
 ```
 
-## Screenshots
+## Screenshots of Lighting App
+
+- Enter Training Parameter
 ![Train](./assets/../static/train.png)
+- Enter Model to Deploy
 ![Deploy](./assets/../static/deploy.png)
+- Evaluate Training
 ![Diag](./assets/../static/diag.png)
+- Inference on a Model
 ![Inference](./assets/../static/inference.png)
 
 ## Explain the code
