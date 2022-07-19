@@ -1,5 +1,6 @@
-data/
 .shared/
 .storage/
+data/
 flagged/
 lightning_logs/
+pocs/

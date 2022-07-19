@@ -13,6 +13,16 @@ Lightning App:
 - Drive
 
 
+```mermaid
+graph TD;
+  U[UI] -- start Training --> T;
+  U -- deploy model --> T;
+  T[Train] -- Send lightning_log --> D[Tensorboard];
+  T -- Send weights.py --> G[Gradio];
+```    
 
+
+
+```
 train_script.py --trainer.max_epochs=1 --trainer.limit_train_batches=12 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc
- 
+``` 

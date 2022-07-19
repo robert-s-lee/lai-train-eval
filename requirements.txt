@@ -1,12 +1,3 @@
-torchvision==0.10.0
-pytorch-lightning==1.6.3
-jsonargparse[signatures]==4.7.3
-wandb==0.12.16
-gradio==2.9.4
-pyyaml==5.4.0
-protobuf<4.21.0  # 4.21 breaks with wandb, tensorboard, or pytorch-lightning: https://github.com/protocolbuffers/protobuf/issues/10048
-lightning_hpo
-websockets
-setuptools==59.5.0  # fix tensorboard AttributeError: module 'setuptools._distutils' has no attribute 'version'.
-tensorboard
+# flow
+streamlit
 https://github.com/robert-s-lee/lit_bashwork/archive/refs/tags/0.0.1.tar.gz
