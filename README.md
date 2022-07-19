@@ -14,7 +14,7 @@ graph TD;
   T[Train Lighting Work]      <-- state changes --> LF[Orchestrate Lightning Flow]
   I[Inference Lightning Work] <-- state changes --> LF
   D[Diag Lightning Work]      <-- state changes-->  LF
-  LF                          <--- ->               LA[Lightning App] 
+  LF                          <---->                LA[Lightning App] 
 ```
 - Develop and test locally
 ```bash
