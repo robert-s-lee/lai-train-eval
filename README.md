@@ -35,16 +35,16 @@ Flexible Workflow with Lightning App
 <tr>
 <td>
 <!-- REMOVE THE BACKSLASHES -->
-\```mermaid
+```mermaid
 graph TD;
   T[Train with Lighting & Module Trainer] -- Send lightning_log --> D[Diag with Tensorboard]; 
   D -- Send weights.py --> G[Deploy with Gradio];
   G -- Retrain --> T;
-\```
+```
 </td>
 <td>
 <!-- REMOVE THE BACKSLASHES -->
-\```mermaid
+```mermaid
 graph TD;
   L[Lightning App] --> U[UI with Streamlit]
   U -- start Training --> T[Train with Lighting & Module Trainer];
@@ -52,7 +52,7 @@ graph TD;
   T -- Send lightning_log --> D[Diag with Tensorboard];
   T -- Send weights.py --> G;
   G -- Retrain --> T;
-\```
+```
 </td>
 </tr>
 
