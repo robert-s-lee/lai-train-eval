@@ -4,20 +4,29 @@ Integrating many components each with it's own scripting tools take time and err
 Lighting App is pure Python. 
 One language for all tasks.
 
-## Current State  
-Lets assume we have existing scripts for training and inference.
-Orchestration is typical linear workflow.
-Many tools and manual typing results in complex and error prone process.
 
+## Test Locally and Scale in the Cloud
+
+- Develop locally on a single box and deploy on distributed on the cloud without any code change
+  
 ```mermaid
 graph TD;
-  U[ssh] -- login to a system --> T[Train with Lighting & Module Trainer];
-  T -- scp lightning_log --> D[Diag with Tensorboard]; 
-  D -- scp weights.py --> G[Deploy with Gradio];
-  G -- scp inference errors --> T;
+  T[Train Lighting Work]      <-- state changes --> LF[Orchestrate Lightning Flow]
+  I[Inference Lightning Work] <-- state changes --> LF
+  D[Diag Lightning Work]      <-- state changes-->  LF
+  LF                          <--- ->               LA[Lightning App] 
+```
+- Develop and test locally
+```bash
+lightning app run app.py
+```
+- Deploy on the cloud
+
+```bash
+lightning app run app.py --cloud
 ```
 
-## Target State with Lightning App
+## Interactive workflow with Lightning App
 Same existing scripts are wrapped in as a Lightning App.
 Lighting Flow is used to codify orchestration in Python code.
 Lighting Work is used to run the script in the cloud. 
@@ -51,5 +60,3 @@ graph TD;
 ![Diag](./assets/../static/diag.png)
 - Inference on a Model
 ![Inference](./assets/../static/inference.png)
-
-## Explain the code
