@@ -1,49 +1,26 @@
-A lift-and-shift tutorial of Lightning App, Flow, Work.  
-- interactive UI
-- training
-- training diag
-- eval
+Lift-and-shift existing training and inference scripts as Lightning App.
+Lightning App is the one tool that can automate the research workflow and ML pipeline.
+Complexity integrating many components can be simplified with Lighting App.
 
-Integrations:
-- Streamlit
-- Gradio
-- Tensorboard
+## Current State  
+Lets assume we have existing scripts for training and inference.
+Orchestration is typical linear workflow.
+Many tools and manual typing results in complex and error prone process.
 
-Lightning App:
-- Drive
-
-
-<table>
-<tr>
-<th align="center">
-<img width="441" height="1">
-<p> 
-<small>
-Current Simple Workflow
-</small>
-</p>
-</th>
-<th align="center">
-<img width="441" height="1">
-<p> 
-<small>
-Flexible Workflow with Lightning App
-</small>
-</p>
-</th>
-</tr>
-<tr>
-<td>
-<!-- REMOVE THE BACKSLASHES -->
 ```mermaid
 graph TD;
-  T[Train with Lighting & Module Trainer] -- Send lightning_log --> D[Diag with Tensorboard]; 
-  D -- Send weights.py --> G[Deploy with Gradio];
-  G -- Retrain --> T;
+  U[ssh] -- login to a system --> T[Train with Lighting & Module Trainer];
+  T -- scp lightning_log --> D[Diag with Tensorboard]; 
+  D -- scp weights.py --> G[Deploy with Gradio];
+  G -- scp inference errors --> T;
 ```
-</td>
-<td>
-<!-- REMOVE THE BACKSLASHES -->
+
+## Target State with Lightning App
+Same existing scripts are wrapped in as a Lightning App.
+Lighting Flow is used to codify orchestration in Python code.
+Lighting Work is used to run the script in the cloud. 
+Interactive workflow is enabled with Lightning App.
+
 ```mermaid
 graph TD;
   L[Lightning App] --> U[UI with Streamlit]
@@ -53,15 +30,19 @@ graph TD;
   T -- Send weights.py --> G;
   G -- Retrain --> T;
 ```
-</td>
-</tr>
+## Data sharing across VMs are managed by Lightning App Drive
 
-
-
-
-
-
-
+```mermaid
+graph TD;
+  T[Train]     <-- push, get --> LD[Lightning App Drive]
+  I[Inference] <-- push, get --> LD
+  D[Diag]]     <-- push, get --> LD
 ```
-train_script.py --trainer.max_epochs=1 --trainer.limit_train_batches=12 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc
-``` 
+
+## Screenshots
+![Train](./assets/../static/train.png)
+![Deploy](./assets/../static/deploy.png)
+![Diag](./assets/../static/diag.png)
+![Inference](./assets/../static/inference.png)
+
+## Explain the code
