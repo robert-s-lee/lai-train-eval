@@ -15,7 +15,14 @@ Lightning App:
 
 ```mermaid
 graph TD;
-  U[UI] -- start Training --> T[Train with Lighting Module Trainer];
+  T[Train with Lighting & Module Trainer] -- Send lightning_log --> D[Diag with Tensorboard]; 
+  D -- Send weights.py --> G[Deploy with Gradio];
+```   
+
+```mermaid
+graph TD;
+  L[Lightning App] --> U[UI with Streamlit]
+  U -- start Training --> T[Train with Lighting & Module Trainer];
   U -- deploy model --> G[Deploy with Gradio];
   T -- Send lightning_log --> D[Diag with Tensorboard];
   T -- Send weights.py --> G;
