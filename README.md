@@ -7,15 +7,8 @@ One language for all tasks.
 
 ## Test Locally and Scale in the Cloud
 
-- Develop locally on a single box and deploy on distributed on the cloud without any code change
+Develop locally on a single box and deploy on distributed on the cloud without any code change
   
-```mermaid
-graph TD;
-  T[Train Lighting Work]      <-- state changes --> LF[Orchestrate Lightning Flow]
-  I[Inference Lightning Work] <-- state changes --> LF
-  D[Diag Lightning Work]      <-- state changes-->  LF
-  LF                          <---->                LA[Lightning App] 
-```
 - Develop and test locally
 ```bash
 lightning app run app.py
@@ -24,6 +17,28 @@ lightning app run app.py
 
 ```bash
 lightning app run app.py --cloud
+```
+
+## Lighting App is Composed of Lightning Flow(s) and Lightning Work(s)
+
+On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
+Locally, Flow(s) and Work(s) run on a same VM.
+Distributed state changes are serialized and managed by Lightning Flow.
+
+```mermaid
+graph TD;
+  T[Train Lighting Work]      <-- state changes --> LF[Orchestrate Lightning Flow]
+  I[Inference Lightning Work] <-- state changes --> LF
+  D[Diag Lightning Work]      <-- state changes-->  LF
+```
+
+## Data sharing across VMs are managed by Lightning App Drive
+
+```mermaid
+graph TD;
+  T[Train]     <-- push, get --> LD[Lightning App Drive]
+  I[Inference] <-- push, get --> LD
+  D[Diag]      <-- push, get --> LD
 ```
 
 ## Interactive workflow with Lightning App
@@ -40,14 +55,6 @@ graph TD;
   T -- Send lightning_log --> D[Diag with Tensorboard];
   T -- Send weights.py --> G;
   G -- Retrain --> T;
-```
-## Data sharing across VMs are managed by Lightning App Drive
-
-```mermaid
-graph TD;
-  T[Train]     <-- push, get --> LD[Lightning App Drive]
-  I[Inference] <-- push, get --> LD
-  D[Diag]      <-- push, get --> LD
 ```
 
 ## Screenshots of Lighting App
