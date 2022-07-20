@@ -21,30 +21,61 @@ lightning app run app.py --cloud
 
 ## Lighting App is Composed of Lightning Flow(s) and Lightning Work(s)
 
-On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
+Distributed state changes are serialized and managed by Lightning Flow.  
+Lightning Flow then uses `run` to execute tasks.
+
 Locally, Flow(s) and Work(s) run on a same VM.
-Distributed state changes are serialized and managed by Lightning Flow.
+The diagram below shows state changes.
+The runs are omitted from this diagram.
 
 ```mermaid
 graph TD;
-  T[Train Lighting Work]      <-- state changes --> LF[Orchestrate Lightning Flow]
-  I[Inference Lightning Work] <-- state changes --> LF
-  D[Diag Lightning Work]      <-- state changes-->  LF
+  subgraph Local VM
+    LF[Orchestrate Lightning Flow]
+    T[Train Lighting Work]      <-- state changes --> LF
+    I[Inference Lightning Work] <-- state changes --> LF
+    D[Diag Lightning Work]      <-- state changes-->  LF
+  end
+```
+On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
+The diagram below shows run and state changes.
+
+```mermaid
+graph TD;
+  subgraph Flow VM -- always one VM
+    LF[Orchestrate Lightning Flow]
+  end
+  subgraph Train VMs
+    T[Train Lighting Work]      <-- state changes --> LF
+    LF --run --> T
+  end
+  subgraph Inference VMs
+    I[Inference Lightning Work] <-- state changes --> LF
+    LF --run --> I
+  end
+  subgraph Diag VM  
+    D[Diag Lightning Work]      <-- state changes-->  LF
+    LF --run--> D
+  end
 ```
 
 ## Data sharing across VMs are managed by Lightning App Drive
 
+Lightning App Drive is available among Lightning Works.
+Train, Inference, Diag can share files.
+
 ```mermaid
 graph TD;
-  T[Train]     <-- push, get --> LD[Lightning App Drive]
+  LD[Lightning App Drive]
+  T[Train]     <-- push, get --> LD 
   I[Inference] <-- push, get --> LD
   D[Diag]      <-- push, get --> LD
 ```
 
 ## Interactive workflow with Lightning App
-Same existing scripts are wrapped in as a Lightning App.
+Existing scripts, **unchanged**, are wrapped in as a Lightning App.
 Lighting Flow is used to codify orchestration in Python code.
-Lighting Work is used to run the script in the cloud. 
+Lighting Work is used to run the script. 
 Interactive workflow is enabled with Lightning App.
 
 ```mermaid
