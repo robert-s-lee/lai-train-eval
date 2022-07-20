@@ -42,6 +42,7 @@ The diagram below shows run and state changes.
 
 ```mermaid
 graph TD;
+  subgraph Cloud
   subgraph Flow VM -- always one VM
     LF[Orchestrate Lightning Flow]
   end
@@ -56,6 +57,7 @@ graph TD;
   subgraph Diag VM  
     D[Diag Lightning Work]      <-- state changes-->  LF
     LF --run--> D
+  end
   end
 ```
 
