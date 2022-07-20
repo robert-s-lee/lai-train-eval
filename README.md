@@ -5,7 +5,7 @@ Lighting App is pure Python.
 One language for all tasks.
 
 
-## Test Locally and Scale in the Cloud
+## Develop Locally and Scale in the Cloud
 
 Develop locally on a single box and deploy on distributed on the cloud without any code change
   

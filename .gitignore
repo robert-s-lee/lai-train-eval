@@ -4,5 +4,5 @@ data/
 .shared/
 .storage/
 flagged/
-lightning_logs/
+lightning_logs/version_*
 pocs/
