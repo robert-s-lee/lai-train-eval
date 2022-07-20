@@ -87,7 +87,7 @@ class My_Flow(L.LightningFlow):
   def run(self, *args, **kwargs):
     # one time activity
     # 1. start the tensorboard one time
-    #self.trainer_diag.run("tensorboard --logdir lightning_logs --host $host --port $port", wait_for_exit=False)
+    self.trainer_diag.run("tensorboard --logdir lightning_logs --host $host --port $port", wait_for_exit=False)
 
     # 2. pull available models from trainer and initialize the  UI
     self.trainer.run(weights_lightning_logs, save_stdout=True)
