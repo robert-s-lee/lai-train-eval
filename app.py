@@ -6,44 +6,72 @@ from lightning.app.utilities.state import AppState
 from lightning_app.frontend import StreamlitFrontend
 import streamlit as st
 
-# import to escape special chracters
-# $$ --> $
-# \\\ --> \
+# command to list modesl that have example.pt for deployment
 weights_lightning_logs = """find lightning_logs -name example.pt -type f -maxdepth 2 | xargs -n1 dirname | xargs -n1 basename"""
 
 # ##################################################################################################
 # UI 
 def main_ui(state:AppState):
+  """app's main menu with sidebar for various tasks"""
+  st.set_page_config(
+     page_title="Lighting App Demo",
+     layout="wide",
+     initial_sidebar_state="expanded",
+  )
   page_names_to_func = {
+    'About': about_ui,
     'Train': train_ui,
     'Deploy': select_model_ui,
   }
   page = st.sidebar.selectbox("Main Menu", options=page_names_to_func.keys())
   page_names_to_func[page](state)
-  
+
+def about_ui(state:AppState):
+  st.markdown("""
+  # Lightning is the "glue" layer of ML.
+  - Build models.
+  - Research Workflows.
+  - Production Pipeline.
+
+  # In this Demo:
+  - Build MNIST models using Lighting Modules, DataLoaders, Trainer, CLI
+  - Finetune workflows with Tensorboard, Gradio and Streamlit.
+  - "Glue" all using Lightning Flow and Work.
+  - Deploy the resulting Lightning App locally or the Cloud.
+
+  [![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIExvY2FsIFZNXG4gICAgTEYoKEFwcCA8YnI-PGJyPkxpZ2h0bmluZyA8YnI-RmxvdykpXG4gICAgVChUcmFpbiA8YnI-PGJyPkxpZ2h0aW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgRChEaWFnIDxicj48YnI-TGlnaHRuaW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-ICBMRlxuICAgIExGIC0tIHJ1biAtLT4gVFxuICAgIExGIC0tIHJ1biAtLT4gSVxuICAgIExGIC0tIHJ1biAtLT4gRCBcbiAgICBUIC0tIGV4aXN0aW5nIHNjcmlwdCAtLT4gVFNbdHJhaW5fc2NyaXB0LnB5XVxuICAgIEkgLS0gZXhpc3Rpbmcgc2NyaXB0IC0tPiBJU1tncmFkaW9fc2NyaXB0LnB5XVxuICAgIEQgLS0gc2hlbGwgY29tbWFuZCAtLT4gICBEU1t0ZW5zb3Jib2FyZF1cbiAgZW5kIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)](https://mermaid-js.github.io/docs/mermaid-live-editor-beta/#/edit/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIExvY2FsIFZNXG4gICAgTEYoKEFwcCA8YnI-PGJyPkxpZ2h0bmluZyA8YnI-RmxvdykpXG4gICAgVChUcmFpbiA8YnI-PGJyPkxpZ2h0aW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgRChEaWFnIDxicj48YnI-TGlnaHRuaW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-ICBMRlxuICAgIExGIC0tIHJ1biAtLT4gVFxuICAgIExGIC0tIHJ1biAtLT4gSVxuICAgIExGIC0tIHJ1biAtLT4gRCBcbiAgICBUIC0tIGV4aXN0aW5nIHNjcmlwdCAtLT4gVFNbdHJhaW5fc2NyaXB0LnB5XVxuICAgIEkgLS0gZXhpc3Rpbmcgc2NyaXB0IC0tPiBJU1tncmFkaW9fc2NyaXB0LnB5XVxuICAgIEQgLS0gc2hlbGwgY29tbWFuZCAtLT4gICBEU1t0ZW5zb3Jib2FyZF1cbiAgZW5kIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)
+  """)  
 def select_model_ui(state:AppState):
+  """select model to deploy"""
+  # current model is the default (default to 0 when Work is not up yet)
   try:
     index=state.model_selection_options.index(state.model_selection)
   except:
     index=0
+  # show the options
   model_selection = st.selectbox("Select Model", 
     options=state.model_selection_options, 
     index=index,
     disabled=state.model_start)
   model_button = st.button("Deploy Model", disabled=state.model_start)
+  # process the submit
   if model_selection != "" and model_button:
     state.model_selection = model_selection
     state.model_start = True
+  # after screenlock, show the next step
   if state.model_start:
     st.info("Please go to Eval tab to use the model")
 
 def train_ui(state:AppState):
+  """enter parameters for training"""
   train_args = st.text_area("Train Arguments", 
     value=state.train_args, placeholder=state.train_args, disabled=state.train_start)
   train_button = st.button("Start Training", disabled=state.train_start)
+  # process the submit
   if train_button:
     state.train_args = train_args
     state.train_start = True
+  # after screenlock, show the next step
   if state.train_start:
     st.info("Please go to Train Diag tab to evalute the training")
 

@@ -1,5 +1,11 @@
-Lift-and-shift existing training and inference scripts as Lightning App.
-Lightning App is the one tool that can automate the research workflow and ML pipeline.
+Lightning App automate the research workflow and production pipeline.
+Lightning App is composed of Lightning Work and Lightning Flow.
+Wrap existing scripts as Lightning Works.
+Exchange data among Lightning Works with Lightning Drives.
+Lightning Works send state information to Lighting Flows.
+Lightning Flows send run command to Lightning Works.
+Distributed states and runs are serialized via event loops in Lightning Flows.
+
 Integrating many components each with it's own scripting tools take time and error pone.
 Lighting App is pure Python. 
 One language for all tasks.
@@ -31,31 +37,38 @@ The runs are omitted from this diagram.
 ```mermaid
 graph TD;
   subgraph Local VM
-    LF[Orchestrate Lightning Flow]
-    T[Train Lighting Work]      <-- state changes --> LF
-    I[Inference Lightning Work] <-- state changes --> LF
-    D[Diag Lightning Work]      <-- state changes-->  LF
+    LF((App <br><br>Lightning <br>Flow))
+    T(Train <br><br>Lighting Work)      -- state <br>changes --> LF
+    I(Inference <br><br>Lightning Work) -- state <br>changes --> LF
+    D(Diag <br><br>Lightning Work)      -- state <br>changes -->  LF
+    LF -- run --> T
+    LF -- run --> I
+    LF -- run --> D 
+    T -- existing script --> TS[train_script.py]
+    I -- existing script --> IS[gradio_script.py]
+    D -- shell command -->   DS[tensorboard]
   end
 ```
+
 On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
 The diagram below shows run and state changes.
 
 ```mermaid
 graph TD;
   subgraph Cloud
-  subgraph Flow VM -- always one VM
-    LF[Orchestrate Lightning Flow]
+  subgraph Flow VM -- Always one VM
+    LF((Orchestrate <br><br>Lightning Flow))
   end
   subgraph Train VMs
-    T[Train Lighting Work]      <-- state changes --> LF
+    T(Train <br><br>Lighting Work)      <-- state changes --> LF
     LF --run --> T
   end
   subgraph Inference VMs
-    I[Inference Lightning Work] <-- state changes --> LF
+    I(Inference <br><br>Lightning Work) <-- state changes --> LF
     LF --run --> I
   end
   subgraph Diag VM  
-    D[Diag Lightning Work]      <-- state changes-->  LF
+    D(Diag <br><br>Lightning Work)      <-- state changes-->  LF
     LF --run--> D
   end
   end
@@ -100,3 +113,5 @@ graph TD;
 ![Diag](./assets/../static/diag.png)
 - Inference on a Model
 ![Inference](./assets/../static/inference.png)
+
+## Current State
