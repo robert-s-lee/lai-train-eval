@@ -35,7 +35,7 @@ The diagram below shows state changes.
 The runs are omitted from this diagram.
 
 ```mermaid
-graph TD;
+graph BT;
   subgraph Local VM
     LF((App <br><br>Lightning <br>Flow))
     T(Train <br><br>Lighting Work)      -- state <br>changes --> LF
