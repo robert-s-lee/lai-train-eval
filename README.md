@@ -40,13 +40,16 @@ graph TD;
     LF((App <br><br>Lightning <br>Flow))
     T(Train <br><br>Lighting Work)      -- state <br>changes --> LF
     I(Inference <br><br>Lightning Work) -- state <br>changes --> LF
-    D(Diag <br><br>Lightning Work)      -- state <br>changes -->  LF
+    D(Diag <br><br>Lightning Work)      -- state <br>changes --> LF
+    U(UI <br><br>Lightning FLow)         -- state <br>changes --> LF  
     LF -- run --> T
     LF -- run --> I
     LF -- run --> D 
+    LF -- run --> U 
     T -- existing script --> TS[train_script.py]
     I -- existing script --> IS[gradio_script.py]
     D -- shell command -->   DS[tensorboard]
+    U -- existing script --> US[streamlit]
   end
 ```
 
