@@ -1,15 +1,26 @@
 Lightning App automate the research workflow and production pipeline.
 Lightning App is composed of Lightning Work and Lightning Flow.
-Wrap existing scripts as Lightning Works.
-Exchange data among Lightning Works with Lightning Drives.
+Start by wrapping existing scripts as Lightning Works.
 Lightning Works send state information to Lighting Flows.
 Lightning Flows send run command to Lightning Works.
 Distributed states and runs are serialized via event loops in Lightning Flows.
+Distribute data among Lightning Works with Lightning Drives, Path, and Payload.
 
-Integrating many components each with it's own scripting tools take time and error pone.
-Lighting App is pure Python. 
-One language for all tasks.
-
+```mermaid
+graph LR;
+  AP(App <br><br>Lightning <br>App)
+  subgraph State Transition via Event Loop
+    LF((Orchestrate <br><br>Lightning <br>Flow))
+    LW[Run <br><br>Lightning <br>Work]
+    AP -- run --> LF
+    LF -- run --> LW
+    LW -- state changes --> LF
+  end  
+  subgraph existing scripts
+    S[existing .py .sh .. code]
+  end
+  LW ---> S
+```
 
 ## Develop Locally and Scale in the Cloud
 
@@ -41,17 +52,30 @@ graph BT;
     T(Train <br><br>Lighting Work)      -- state <br>changes --> LF
     I(Inference <br><br>Lightning Work) -- state <br>changes --> LF
     D(Diag <br><br>Lightning Work)      -- state <br>changes --> LF
-    U(UI <br><br>Lightning FLow)         -- state <br>changes --> LF  
+    U(UI <br><br>Lightning FLow)        -- state <br>changes --> LF  
     LF -- run --> T
     LF -- run --> I
     LF -- run --> D 
     LF -- run --> U 
-    T -- existing script --> TS[train_script.py]
-    I -- existing script --> IS[gradio_script.py]
-    D -- shell command -->   DS[tensorboard]
-    U -- existing script --> US[streamlit]
+    subgraph existing scripts
+      TS[train_script.py]
+      IS[gradio_script.py]
+      DS[tensorboard]
+      US[ui_script.py]
+    end
+    subgraph wrapper code
+      T ---> TS
+      I ---> IS
+      D ---> DS
+      U ---> US  
+    end
   end
 ```
+
+    T ---> TS
+    I ---> IS
+    D ---> DS
+    U ---> US
 
 On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
 The diagram below shows run and state changes.
@@ -116,5 +140,3 @@ graph TD;
 ![Diag](./assets/../static/diag.png)
 - Inference on a Model
 ![Inference](./assets/../static/inference.png)
-
-## Current State

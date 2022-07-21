@@ -5,85 +5,10 @@ from lightning.app.storage.drive import Drive
 from lightning.app.utilities.state import AppState
 from lightning_app.frontend import StreamlitFrontend
 import streamlit as st
+from  script import ui_script
 
 # command to list modesl that have example.pt for deployment
 weights_lightning_logs = """find lightning_logs -name example.pt -type f -maxdepth 2 | xargs -n1 dirname | xargs -n1 basename"""
-
-# ##################################################################################################
-# UI 
-def main_ui(state:AppState):
-  """app's main menu with sidebar for various tasks"""
-  st.set_page_config(
-     page_title="Lighting App Demo",
-     layout="wide",
-     initial_sidebar_state="expanded",
-  )
-  page_names_to_func = {
-    'About': about_ui,
-    'Train': train_ui,
-    'Deploy': select_model_ui,
-  }
-  page = st.sidebar.selectbox("Main Menu", options=page_names_to_func.keys())
-  page_names_to_func[page](state)
-
-def about_ui(state:AppState):
-  st.markdown("""
-  # Lightning is the "glue" layer of ML.
-  - Build models.
-  - Research Workflows.
-  - Production Pipeline.
-
-  # Research Workflow:
-  - Build MNIST models using Lighting Modules, DataLoaders, Trainer, CLI
-  - Finetune workflows with Tensorboard, Gradio and Streamlit.
-  - "Glue" all using Lightning Flow and Work.
-  - Deploy the resulting Lightning App locally or the Cloud.
-
-  # Production Pipeline:
-  - [Source Code](https://github.com/robert-s-lee/lai-train-eval)
-
-  - Deploy Locally `lightning run app app.py`
-
-  [![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIExvY2FsIFZNXG4gICAgTEYoKEFwcCA8YnI-PGJyPkxpZ2h0bmluZyA8YnI-RmxvdykpXG4gICAgVChUcmFpbiA8YnI-PGJyPkxpZ2h0aW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgRChEaWFnIDxicj48YnI-TGlnaHRuaW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-ICBMRlxuICAgIExGIC0tIHJ1biAtLT4gVFxuICAgIExGIC0tIHJ1biAtLT4gSVxuICAgIExGIC0tIHJ1biAtLT4gRCBcbiAgICBUIC0tIGV4aXN0aW5nIHNjcmlwdCAtLT4gVFNbdHJhaW5fc2NyaXB0LnB5XVxuICAgIEkgLS0gZXhpc3Rpbmcgc2NyaXB0IC0tPiBJU1tncmFkaW9fc2NyaXB0LnB5XVxuICAgIEQgLS0gc2hlbGwgY29tbWFuZCAtLT4gICBEU1t0ZW5zb3Jib2FyZF1cbiAgZW5kIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)](https://mermaid-js.github.io/docs/mermaid-live-editor-beta/#/edit/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIExvY2FsIFZNXG4gICAgTEYoKEFwcCA8YnI-PGJyPkxpZ2h0bmluZyA8YnI-RmxvdykpXG4gICAgVChUcmFpbiA8YnI-PGJyPkxpZ2h0aW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-IExGXG4gICAgRChEaWFnIDxicj48YnI-TGlnaHRuaW5nIFdvcmspICAgICAgLS0gc3RhdGUgPGJyPmNoYW5nZXMgLS0-ICBMRlxuICAgIExGIC0tIHJ1biAtLT4gVFxuICAgIExGIC0tIHJ1biAtLT4gSVxuICAgIExGIC0tIHJ1biAtLT4gRCBcbiAgICBUIC0tIGV4aXN0aW5nIHNjcmlwdCAtLT4gVFNbdHJhaW5fc2NyaXB0LnB5XVxuICAgIEkgLS0gZXhpc3Rpbmcgc2NyaXB0IC0tPiBJU1tncmFkaW9fc2NyaXB0LnB5XVxuICAgIEQgLS0gc2hlbGwgY29tbWFuZCAtLT4gICBEU1t0ZW5zb3Jib2FyZF1cbiAgZW5kIiwibWVybWFpZCI6eyJ0aGVtZSI6ImRlZmF1bHQifSwidXBkYXRlRWRpdG9yIjpmYWxzZX0)
-
-  - Deploy on the Cloud `lightning run app app.py --cloud`
-  [![](https://mermaid.ink/img/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIENsb3VkXG4gIHN1YmdyYXBoIEZsb3cgVk0gLS0gQWx3YXlzIG9uZSBWTVxuICAgIExGKChPcmNoZXN0cmF0ZSA8YnI-PGJyPkxpZ2h0bmluZyBGbG93KSlcbiAgZW5kXG4gIHN1YmdyYXBoIFRyYWluIFZNc1xuICAgIFQoVHJhaW4gPGJyPjxicj5MaWdodGluZyBXb3JrKSAgICAgIDwtLSBzdGF0ZSBjaGFuZ2VzIC0tPiBMRlxuICAgIExGIC0tcnVuIC0tPiBUXG4gIGVuZFxuICBzdWJncmFwaCBJbmZlcmVuY2UgVk1zXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgPC0tIHN0YXRlIGNoYW5nZXMgLS0-IExGXG4gICAgTEYgLS1ydW4gLS0-IElcbiAgZW5kXG4gIHN1YmdyYXBoIERpYWcgVk0gIFxuICAgIEQoRGlhZyA8YnI-PGJyPkxpZ2h0bmluZyBXb3JrKSAgICAgIDwtLSBzdGF0ZSBjaGFuZ2VzLS0-ICBMRlxuICAgIExGIC0tcnVuLS0-IERcbiAgZW5kXG4gIGVuZCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9)](https://mermaid-js.github.io/docs/mermaid-live-editor-beta/#/edit/eyJjb2RlIjoiZ3JhcGggVEQ7XG4gIHN1YmdyYXBoIENsb3VkXG4gIHN1YmdyYXBoIEZsb3cgVk0gLS0gQWx3YXlzIG9uZSBWTVxuICAgIExGKChPcmNoZXN0cmF0ZSA8YnI-PGJyPkxpZ2h0bmluZyBGbG93KSlcbiAgZW5kXG4gIHN1YmdyYXBoIFRyYWluIFZNc1xuICAgIFQoVHJhaW4gPGJyPjxicj5MaWdodGluZyBXb3JrKSAgICAgIDwtLSBzdGF0ZSBjaGFuZ2VzIC0tPiBMRlxuICAgIExGIC0tcnVuIC0tPiBUXG4gIGVuZFxuICBzdWJncmFwaCBJbmZlcmVuY2UgVk1zXG4gICAgSShJbmZlcmVuY2UgPGJyPjxicj5MaWdodG5pbmcgV29yaykgPC0tIHN0YXRlIGNoYW5nZXMgLS0-IExGXG4gICAgTEYgLS1ydW4gLS0-IElcbiAgZW5kXG4gIHN1YmdyYXBoIERpYWcgVk0gIFxuICAgIEQoRGlhZyA8YnI-PGJyPkxpZ2h0bmluZyBXb3JrKSAgICAgIDwtLSBzdGF0ZSBjaGFuZ2VzLS0-ICBMRlxuICAgIExGIC0tcnVuLS0-IERcbiAgZW5kXG4gIGVuZCIsIm1lcm1haWQiOnsidGhlbWUiOiJkZWZhdWx0In0sInVwZGF0ZUVkaXRvciI6ZmFsc2V9)
-  """)  
-
-
-def select_model_ui(state:AppState):
-  """select model to deploy"""
-  # current model is the default (default to 0 when Work is not up yet)
-  try:
-    index=state.model_selection_options.index(state.model_selection)
-  except:
-    index=0
-  # show the options
-  model_selection = st.selectbox("Select Model", 
-    options=state.model_selection_options, 
-    index=index,
-    disabled=state.model_start)
-  model_button = st.button("Deploy Model", disabled=state.model_start)
-  # process the submit
-  if model_selection != "" and model_button:
-    state.model_selection = model_selection
-    state.model_start = True
-  # after screenlock, show the next step
-  if state.model_start:
-    st.info("Please go to Eval tab to use the model")
-
-def train_ui(state:AppState):
-  """enter parameters for training"""
-  train_args = st.text_area("Train Arguments", 
-    value=state.train_args, placeholder=state.train_args, disabled=state.train_start)
-  train_button = st.button("Start Training", disabled=state.train_start)
-  # process the submit
-  if train_button:
-    state.train_args = train_args
-    state.train_start = True
-  # after screenlock, show the next step
-  if state.train_start:
-    st.info("Please go to Train Diag tab to evalute the training")
 
 # UI state
 class App_UI(L.LightningFlow):
@@ -98,7 +23,7 @@ class App_UI(L.LightningFlow):
     self.model_selection = "base"
     self.model_start = True
   def configure_layout(self):
-    return(StreamlitFrontend(render_fn=main_ui))
+    return(StreamlitFrontend(render_fn=ui_script.main_ui))
 
 # ##################################################################################################
 # Main App
@@ -137,7 +62,7 @@ class My_Flow(L.LightningFlow):
 
     if self.app_ui.model_start:
       # 1. indicate the model to use
-      cmd = "python gradio_script.py --host $host --port $port --model_path lightning_logs/%s/example.pt" % (self.app_ui.model_selection)
+      cmd = "python script/gradio_script.py --host $host --port $port --model_path lightning_logs/%s/example.pt" % (self.app_ui.model_selection)
       # 2. (re)start the prediction with model selected
       if self.eval_ui.last_args() != cmd:
         self.eval_ui.run(cmd, wait_for_exit=False, kill_pid=True, 
@@ -148,8 +73,8 @@ class My_Flow(L.LightningFlow):
     if self.app_ui.train_start:
       # 1. start the training
       # the saved_after_run can be hidden by subclassing, but exposing the work to flow hack for now
-      cmd = f"python train_script.py {self.app_ui.train_args}"
-      self.trainer.run(f"python train_script.py {self.app_ui.train_args}", 
+      cmd = f"python script/train_script.py {self.app_ui.train_args}"
+      self.trainer.run(cmd, 
         run_after_run = [weights_lightning_logs],
         outputs=['lightning_logs'])
 
@@ -159,7 +84,7 @@ class My_Flow(L.LightningFlow):
         self.trainer.reset_last_args()  # don't come back here again
 
       # 3. pull the new tensorboard logs from the trainer
-      self.trainer_diag.run(f"python train_script.py {self.app_ui.train_args}", 
+      self.trainer_diag.run(cmd, 
         inputs=['lightning_logs'], input_output_only=True)
 
       # 4. unlock the UI
