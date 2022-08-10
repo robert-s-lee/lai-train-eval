@@ -78,7 +78,7 @@ class MNISTDataModule(LightningDataModule):
     the same Data as pytorch MNIST exmaple
     https://github.com/pytorch/examples/blob/main/mnist/main.py#L112-L121
     """
-    def __init__(self, batch_size=32):
+    def __init__(self, num_workers=1, batch_size=32):
         super().__init__()
         self.save_hyperparameters()
 
@@ -91,7 +91,7 @@ class MNISTDataModule(LightningDataModule):
 
     def train_dataloader(self):
         train_dataset = MNIST("./data", train=True, download=False, transform=self.transform)
-        return torch.utils.data.DataLoader(train_dataset, batch_size=self.hparams.batch_size)
+        return torch.utils.data.DataLoader(train_dataset, num_workers=self.hparams.num_workers, batch_size=self.hparams.batch_size)
 
     def val_dataloader(self):
         val_dataset = MNIST("./data", train=False, download=False, transform=self.transform)

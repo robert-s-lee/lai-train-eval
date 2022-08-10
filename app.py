@@ -14,7 +14,8 @@ weights_lightning_logs = """find lightning_logs -name example.pt -type f -maxdep
 @dataclass
 class TtydBuildConfig(L.BuildConfig):
     def build_commands(self):
-        return ["""
+        return ["""sudo apt-get update
+sudo apt-get install htop net-tools lsof
 sudo apt-get install build-essential cmake git libjson-c-dev libwebsockets-dev
 git clone https://github.com/tsl0922/ttyd.git
 cd ttyd && mkdir build && cd build
@@ -27,7 +28,7 @@ class App_UI(L.LightningFlow):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     # start training when the app start
-    self.train_args = '--trainer.max_epochs=1 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc'
+    self.train_args = '--trainer.max_epochs=1 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc --data.num_workers=2'
     self.train_start = False
     # the menu will be populated by after each training
     self.model_selection_options = []
