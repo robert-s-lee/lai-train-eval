@@ -72,6 +72,7 @@ graph BT;
   end
 ```
 
+
 On the cloud, there is one Lightning Flow VM and many Lightning Work VMs.  
 The diagram below shows run and state changes.
 

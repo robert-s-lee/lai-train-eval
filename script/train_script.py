@@ -9,6 +9,10 @@ from torchmetrics import Accuracy
 from torchvision.datasets import MNIST
 
 class Net(nn.Module):
+    """
+    the same NN as pytorch MNIST exmaple
+    https://github.com/pytorch/examples/blob/main/mnist/main.py#L11-L34
+    """
     def __init__(self):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
@@ -70,6 +74,10 @@ class ImageClassifier(LightningModule):
 
 
 class MNISTDataModule(LightningDataModule):
+    """
+    the same Data as pytorch MNIST exmaple
+    https://github.com/pytorch/examples/blob/main/mnist/main.py#L112-L121
+    """
     def __init__(self, batch_size=32):
         super().__init__()
         self.save_hyperparameters()
@@ -92,7 +100,7 @@ class MNISTDataModule(LightningDataModule):
 
 if __name__ == "__main__":
     cli = LightningCLI(
-        ImageClassifier, MNISTDataModule, seed_everything_default=42, save_config_overwrite=True, run=False
+        ImageClassifier, MNISTDataModule, seed_everything_default=42, save_config_overwrite=True, run=False, auto_registry=True
     )
     cli.trainer.fit(cli.model, datamodule=cli.datamodule)
 

@@ -4,17 +4,19 @@ import streamlit as st
 # UI 
 def main_ui(state):
   """app's main menu with sidebar for various tasks"""
+  # st page defaults
   st.set_page_config(
      page_title="Lighting App Demo",
      layout="wide",
      initial_sidebar_state="expanded",
   )
+  # menu item
   page_names_to_func = {
     'About': about_ui,
     'Train': train_ui,
     'Deploy': select_model_ui,
   }
-  page = st.sidebar.selectbox("Main Menu", options=page_names_to_func.keys())
+  page = st.sidebar.radio("Main Menu", options=page_names_to_func.keys())
   page_names_to_func[page](state)
 
 def about_ui(state):
@@ -66,7 +68,10 @@ def select_model_ui(state):
     state.model_start = True
   # after screenlock, show the next step
   if state.model_start:
-    st.info("Please go to Eval tab to use the model")
+    st.info("""Please go to Eval tab to use the model""")  
+
+  st.info("""The Eval Tab may show `Gateway Error` while the old model is being replaced with the new model.
+    Please wait couple of seconds and refresh the page""")
 
 def train_ui(state):
   """enter parameters for training"""

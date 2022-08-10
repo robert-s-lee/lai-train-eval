@@ -6,16 +6,28 @@ from lightning.app.utilities.state import AppState
 from lightning_app.frontend import StreamlitFrontend
 import streamlit as st
 from  script import ui_script
+from dataclasses import dataclass
 
 # command to list modesl that have example.pt for deployment
 weights_lightning_logs = """find lightning_logs -name example.pt -type f -maxdepth 2 | xargs -n1 dirname | xargs -n1 basename"""
+
+@dataclass
+class TtydBuildConfig(L.BuildConfig):
+    def build_commands(self):
+        return ["""
+sudo apt-get install build-essential cmake git libjson-c-dev libwebsockets-dev
+git clone https://github.com/tsl0922/ttyd.git
+cd ttyd && mkdir build && cd build
+cmake ..
+make && sudo make install
+"""]
 
 # UI state
 class App_UI(L.LightningFlow):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     # start training when the app start
-    self.train_args = '--trainer.max_epochs=1 --trainer.limit_train_batches=12 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc'
+    self.train_args = '--trainer.max_epochs=1 --trainer.limit_val_batches=4 --trainer.callbacks=ModelCheckpoint --trainer.callbacks.monitor=val_acc'
     self.train_start = False
     # the menu will be populated by after each training
     self.model_selection_options = []
@@ -36,7 +48,7 @@ class My_Flow(L.LightningFlow):
 
     # Run Training with Lightning Modules and Trainer
     self.trainer = LitBashWork(drive_name="lit://drive",
-      cloud_build_config=L.BuildConfig(["jsonargparse[signatures]", "pytorch-lightning","torchvision"]))
+      cloud_build_config=TtydBuildConfig(["jsonargparse[signatures]", "pytorch-lightning","torchvision"]))
 
     # Run Tensorboard
     self.trainer_diag = LitBashWork(drive_name="lit://drive", parallel=True,
@@ -51,6 +63,8 @@ class My_Flow(L.LightningFlow):
     # one time activity
     # 1. start the tensorboard one time
     self.trainer_diag.run("tensorboard --logdir lightning_logs --host $host --port $port", wait_for_exit=False)
+    # 1. start the ttyd bash on the trainer
+    self.trainer.run("ttyd -p $port bash", wait_for_exit=False)
 
     # 2. pull available models from trainer and initialize the  UI
     self.trainer.run(weights_lightning_logs, save_stdout=True)
@@ -91,9 +105,10 @@ class My_Flow(L.LightningFlow):
       self.app_ui.train_start = False
 
   def configure_layout(self):
+    trainer_bash = {"name": "Trainer Terminal", "content": self.trainer }
     app_ui = {"name": "App", "content": self.app_ui}
     train_diag = {"name": "Train Diag", "content": self.trainer_diag}
     eval_ui = {"name": "Eval", "content": self.eval_ui}
-    return [app_ui, train_diag, eval_ui]
+    return [app_ui, trainer_bash, train_diag, eval_ui]
         
 app = L.LightningApp(My_Flow())
