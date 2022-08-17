@@ -1,3 +1,4 @@
 # flow
 streamlit
 https://github.com/robert-s-lee/lit_bashwork/archive/refs/tags/0.0.1.tar.gz
+setuptools==59.5.0
